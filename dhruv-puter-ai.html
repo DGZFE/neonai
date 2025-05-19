@@ -1,0 +1,1258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dhruv's Personal AI</title>
+    <script src="https://js.puter.com/v2/"></script>
+    <style>
+        /* Base Styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            background-color: black;
+            color: white;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        /* Neon Colors */
+        :root {
+            --neon-blue: #04D9FF;
+            --neon-pink: #FB48C4;
+            --neon-purple: #B53FFF;
+        }
+        
+        /* Intro Animation */
+        .intro-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: black;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+        
+        .intro-text {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--neon-purple);
+            text-shadow: 
+                0 0 5px var(--neon-purple), 
+                0 0 10px var(--neon-purple), 
+                0 0 20px var(--neon-purple);
+            opacity: 0;
+            animation: fade-in-out 4s ease-in-out forwards;
+        }
+        
+        .credits {
+            margin-top: 2rem;
+            font-size: 1.5rem;
+            color: var(--neon-blue);
+            text-shadow: 
+                0 0 5px var(--neon-blue), 
+                0 0 10px var(--neon-blue);
+            opacity: 0;
+            animation: fade-in-out 4s ease-in-out 0.5s forwards;
+        }
+        
+        @keyframes fade-in-out {
+            0% { opacity: 0; transform: translateY(20px); }
+            20% { opacity: 1; transform: translateY(0); }
+            80% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-20px); }
+        }
+        
+        /* Password Screen */
+        .password-screen {
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            z-index: 50;
+        }
+        
+        .password-title {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            color: var(--neon-purple);
+            text-shadow: 
+                0 0 5px var(--neon-purple), 
+                0 0 10px var(--neon-purple), 
+                0 0 20px var(--neon-purple);
+        }
+        
+        .password-input {
+            background-color: black;
+            color: white;
+            border: 2px solid var(--neon-blue);
+            padding: 0.75rem 1.5rem;
+            border-radius: 2rem;
+            font-size: 1.2rem;
+            width: 250px;
+            margin-bottom: 1rem;
+            text-align: center;
+            outline: none;
+            box-shadow: 0 0 5px var(--neon-blue);
+            text-shadow: 0 0 2px white;
+            -webkit-text-security: disc;
+        }
+        
+        .password-button {
+            background-color: black;
+            color: var(--neon-pink);
+            border: 2px solid var(--neon-pink);
+            padding: 0.75rem 1.5rem;
+            border-radius: 2rem;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 5px var(--neon-pink), 0 0 10px var(--neon-pink);
+            text-shadow: 0 0 5px var(--neon-pink);
+        }
+        
+        .password-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 10px var(--neon-pink), 0 0 20px var(--neon-pink);
+        }
+        
+        .error-message {
+            color: var(--neon-pink);
+            margin-top: 1rem;
+            font-size: 1rem;
+            text-shadow: 0 0 5px var(--neon-pink);
+            display: none;
+        }
+        
+        /* Chat Interface */
+        .chat-container {
+            display: none;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+            max-width: 800px;
+            padding: 1rem;
+        }
+        
+        .chat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 1rem;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid var(--neon-blue);
+        }
+        
+        .ai-name {
+            color: var(--neon-purple);
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-shadow: 
+                0 0 5px var(--neon-purple), 
+                0 0 10px var(--neon-purple);
+        }
+        
+        .feature-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .feature-button {
+            background-color: black;
+            color: var(--neon-blue);
+            border: 2px solid var(--neon-blue);
+            border-radius: 50%;
+            width: 2.5rem;
+            height: 2.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 5px var(--neon-blue);
+            text-shadow: 0 0 5px var(--neon-blue);
+            font-size: 1.2rem;
+        }
+        
+        .feature-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 10px var(--neon-blue), 0 0 20px var(--neon-blue);
+        }
+        
+        .chat-messages {
+            flex-grow: 1;
+            overflow-y: auto;
+            margin-bottom: 1rem;
+            display: flex;
+            flex-direction: column;
+            padding-right: 0.5rem;
+        }
+        
+        .message {
+            margin-bottom: 1rem;
+            max-width: 80%;
+            padding: 0.75rem 1rem;
+            border-radius: 1.5rem;
+            animation: message-appear 0.3s ease-in-out;
+        }
+        
+        @keyframes message-appear {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .user-message {
+            align-self: flex-end;
+            background-color: black;
+            color: var(--neon-pink);
+            border: 2px solid var(--neon-pink);
+            box-shadow: 0 0 5px var(--neon-pink), 0 0 10px var(--neon-pink);
+            text-shadow: 0 0 5px var(--neon-pink);
+        }
+        
+        .ai-message {
+            align-self: flex-start;
+            background-color: black;
+            color: var(--neon-blue);
+            border: 2px solid var(--neon-blue);
+            box-shadow: 0 0 5px var(--neon-blue), 0 0 10px var(--neon-blue);
+            text-shadow: 0 0 5px var(--neon-blue);
+        }
+        
+        .chat-input-container {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: auto;
+        }
+        
+        .chat-input {
+            flex-grow: 1;
+            background-color: black;
+            color: white;
+            border: 2px solid var(--neon-blue);
+            padding: 0.75rem 1rem;
+            border-radius: 2rem;
+            font-size: 1rem;
+            outline: none;
+            box-shadow: 0 0 5px var(--neon-blue);
+        }
+        
+        .send-button {
+            background-color: black;
+            color: var(--neon-pink);
+            border: 2px solid var(--neon-pink);
+            border-radius: 50%;
+            width: 3rem;
+            height: 3rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 5px var(--neon-pink), 0 0 10px var(--neon-pink);
+            text-shadow: 0 0 5px var(--neon-pink);
+        }
+        
+        .send-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 10px var(--neon-pink), 0 0 20px var(--neon-pink);
+        }
+        
+        /* Image Generator */
+        .image-generator {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: black;
+            border: 2px solid var(--neon-purple);
+            border-radius: 1rem;
+            width: 80%;
+            max-width: 700px;
+            padding: 1.5rem;
+            z-index: 20;
+            display: none;
+            box-shadow: 0 0 10px var(--neon-purple), 0 0 20px var(--neon-purple);
+        }
+        
+        .generator-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .generator-title {
+            color: var(--neon-purple);
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 0;
+            text-shadow: 
+                0 0 5px var(--neon-purple), 
+                0 0 10px var(--neon-purple);
+        }
+        
+        .close-button {
+            background: none;
+            border: none;
+            color: var(--neon-pink);
+            font-size: 2rem;
+            cursor: pointer;
+            text-shadow: 0 0 5px var(--neon-pink), 0 0 10px var(--neon-pink);
+        }
+        
+        .generator-content {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .image-prompt {
+            background-color: black;
+            color: white;
+            border: 2px solid var(--neon-blue);
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            outline: none;
+            box-shadow: 0 0 5px var(--neon-blue);
+        }
+        
+        .generator-button {
+            background-color: black;
+            color: var(--neon-purple);
+            border: 2px solid var(--neon-purple);
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 5px var(--neon-purple), 0 0 10px var(--neon-purple);
+            text-shadow: 0 0 5px var(--neon-purple);
+        }
+        
+        .generator-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 10px var(--neon-purple), 0 0 20px var(--neon-purple);
+        }
+        
+        .image-preview {
+            margin-top: 1rem;
+            background-color: black;
+            border: 1px solid var(--neon-blue);
+            height: 300px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+        
+        .download-button {
+            background-color: black;
+            color: var(--neon-blue);
+            border: 2px solid var(--neon-blue);
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 5px var(--neon-blue), 0 0 10px var(--neon-blue);
+            text-shadow: 0 0 5px var(--neon-blue);
+            display: none;
+        }
+        
+        .download-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 10px var(--neon-blue), 0 0 20px var(--neon-blue);
+        }
+        
+        /* Email Sender */
+        .email-sender {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: black;
+            border: 2px solid var(--neon-pink);
+            border-radius: 1rem;
+            width: 80%;
+            max-width: 700px;
+            padding: 1.5rem;
+            z-index: 20;
+            display: none;
+            box-shadow: 0 0 10px var(--neon-pink), 0 0 20px var(--neon-pink);
+        }
+        
+        .email-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .email-input, .email-subject, .email-body {
+            background-color: black;
+            color: white;
+            border: 2px solid var(--neon-blue);
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            outline: none;
+            box-shadow: 0 0 5px var(--neon-blue);
+        }
+        
+        .email-body {
+            min-height: 200px;
+            resize: vertical;
+        }
+        
+        .send-email-button {
+            background-color: black;
+            color: var(--neon-pink);
+            border: 2px solid var(--neon-pink);
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 5px var(--neon-pink), 0 0 10px var(--neon-pink);
+            text-shadow: 0 0 5px var(--neon-pink);
+        }
+        
+        .send-email-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 10px var(--neon-pink), 0 0 20px var(--neon-pink);
+        }
+        
+        /* Code Executor */
+        .code-executor {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: black;
+            border: 2px solid var(--neon-blue);
+            border-radius: 1rem;
+            width: 90%;
+            max-width: 800px;
+            padding: 1.5rem;
+            z-index: 20;
+            display: none;
+            box-shadow: 0 0 10px var(--neon-blue), 0 0 20px var(--neon-blue);
+        }
+        
+        .code-editor {
+            background-color: #111;
+            color: var(--neon-blue);
+            border: 2px solid var(--neon-blue);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            font-family: monospace;
+            height: 200px;
+            margin-bottom: 1rem;
+            resize: vertical;
+            outline: none;
+            box-shadow: 0 0 5px var(--neon-blue);
+        }
+        
+        .code-output {
+            background-color: #111;
+            color: var(--neon-purple);
+            border: 2px solid var(--neon-purple);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            font-family: monospace;
+            height: 150px;
+            overflow-y: auto;
+            margin-top: 1rem;
+            display: none;
+            text-shadow: 0 0 3px var(--neon-purple);
+        }
+        
+        .run-code-button {
+            background-color: black;
+            color: var(--neon-blue);
+            border: 2px solid var(--neon-blue);
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 5px var(--neon-blue), 0 0 10px var(--neon-blue);
+            text-shadow: 0 0 5px var(--neon-blue);
+        }
+        
+        .run-code-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 10px var(--neon-blue), 0 0 20px var(--neon-blue);
+        }
+        
+        /* Loading indicator */
+        .typing-indicator {
+            display: none;
+            align-self: flex-start;
+            background-color: black;
+            color: var(--neon-blue);
+            border: 2px solid var(--neon-blue);
+            box-shadow: 0 0 5px var(--neon-blue), 0 0 10px var(--neon-blue);
+            padding: 0.75rem 1rem;
+            border-radius: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .typing-dots {
+            display: flex;
+            gap: 0.3rem;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--neon-blue);
+            border-radius: 50%;
+            opacity: 0.6;
+            animation: typing-dot 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing-dot {
+            0% { opacity: 0.6; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+            100% { opacity: 0.6; transform: scale(1); }
+        }
+        
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #111;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--neon-purple);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--neon-pink);
+        }
+    </style>
+</head>
+<body>
+    <!-- Intro Animation -->
+    <div class="intro-screen" id="intro-screen">
+        <div class="intro-text">Dhruv's Personal AI</div>
+        <div class="credits">Created by Dhruv Gowda</div>
+    </div>
+    
+    <!-- Password Screen -->
+    <div class="password-screen" id="password-screen">
+        <div class="password-title">Enter Password</div>
+        <input type="password" class="password-input" id="password-input" placeholder="Password">
+        <button class="password-button" onclick="checkPassword()">Login</button>
+        <div class="error-message" id="error-message">Incorrect password. Please try again.</div>
+    </div>
+    
+    <!-- Chat Interface -->
+    <div class="chat-container" id="chat-container">
+        <div class="chat-header">
+            <div class="ai-name">Dhruv's AI</div>
+            <div class="feature-buttons">
+                <button class="feature-button" onclick="toggleImageGenerator()" title="Generate Image">🖼️</button>
+                <button class="feature-button" onclick="toggleEmailSender()" title="Send Email">✉️</button>
+                <button class="feature-button" onclick="toggleCodeExecutor()" title="Execute Code">🧪</button>
+                <button class="feature-button" onclick="clearChat()" title="Clear Chat">🗑️</button>
+            </div>
+        </div>
+        
+        <div class="chat-messages" id="chat-messages"></div>
+        
+        <div class="typing-indicator" id="typing-indicator">
+            <div class="typing-dots">
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+            </div>
+        </div>
+        
+        <div class="chat-input-container">
+            <input type="text" class="chat-input" id="chat-input" placeholder="Message Dhruv's AI...">
+            <button class="send-button" onclick="sendMessage()">→</button>
+        </div>
+    </div>
+    
+    <!-- Image Generator -->
+    <div class="image-generator" id="image-generator">
+        <div class="generator-header">
+            <div class="generator-title">Neon Image Generator</div>
+            <button class="close-button" onclick="toggleImageGenerator()">×</button>
+        </div>
+        <div class="generator-content">
+            <input type="text" class="image-prompt" id="image-prompt" placeholder="Describe the image you want...">
+            <button class="generator-button" onclick="generateImage()">Generate</button>
+            <div class="image-preview" id="image-preview"></div>
+            <button class="download-button" id="download-button" onclick="downloadImage()">Download SVG</button>
+        </div>
+    </div>
+    
+    <!-- Email Sender -->
+    <div class="email-sender" id="email-sender">
+        <div class="generator-header">
+            <div class="generator-title">Send Email</div>
+            <button class="close-button" onclick="toggleEmailSender()">×</button>
+        </div>
+        <div class="email-form">
+            <input type="text" class="email-input" id="email-recipient" placeholder="To: (email address)">
+            <input type="text" class="email-subject" id="email-subject" placeholder="Subject:">
+            <textarea class="email-body" id="email-body" placeholder="Type your email message here..."></textarea>
+            <button class="send-email-button" onclick="sendEmail()">Send Email</button>
+        </div>
+    </div>
+    
+    <!-- Code Executor -->
+    <div class="code-executor" id="code-executor">
+        <div class="generator-header">
+            <div class="generator-title">Code Execution</div>
+            <button class="close-button" onclick="toggleCodeExecutor()">×</button>
+        </div>
+        <textarea class="code-editor" id="code-editor" placeholder="// Enter JavaScript code here..."></textarea>
+        <button class="run-code-button" onclick="executeCode()">Run Code</button>
+        <div class="code-output" id="code-output"></div>
+    </div>
+    
+    <script>
+        // Password Protection
+        const correctPassword = "1910";
+        let currentSvgCode = '';
+        let chatHistory = [];
+        let conversationMessages = [];
+        
+        // Start with intro animation
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                document.getElementById('intro-screen').style.display = 'none';
+                document.getElementById('password-screen').style.display = 'flex';
+            }, 5000); // Wait for animation to finish (intro animation is 4s)
+        });
+        
+        function checkPassword() {
+            const passwordInput = document.getElementById('password-input');
+            const password = passwordInput.value;
+            
+            if (password === correctPassword) {
+                document.getElementById('password-screen').style.display = 'none';
+                document.getElementById('chat-container').style.display = 'flex';
+                
+                // Initialize conversation with system message
+                conversationMessages = [
+                    {
+                        role: "system",
+                        content: "You are Dhruv's personal AI assistant. You are helpful, creative, and designed specifically for Dhruv Gowda. You have a friendly and enthusiastic personality. You can generate images, send emails, and execute code. Keep your responses concise and engaging. Use emojis occasionally to add personality."
+                    }
+                ];
+                
+                // Send welcome message
+                setTimeout(() => {
+                    addMessage("Hello Dhruv! How can I assist you today? 🌟", "ai");
+                    
+                    // Add this message to conversation history
+                    conversationMessages.push({
+                        role: "assistant",
+                        content: "Hello Dhruv! How can I assist you today? 🌟"
+                    });
+                }, 300);
+                
+                // Load chat history from localStorage
+                loadChatHistory();
+            } else {
+                document.getElementById('error-message').style.display = 'block';
+                passwordInput.value = '';
+            }
+        }
+        
+        // Handle Enter key for password
+        document.getElementById('password-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkPassword();
+            }
+        });
+        
+        // Toggle feature panels
+        function toggleImageGenerator() {
+            const panel = document.getElementById('image-generator');
+            panel.style.display = panel.style.display === 'none' || panel.style.display === '' ? 'block' : 'none';
+            
+            // Hide other panels
+            document.getElementById('email-sender').style.display = 'none';
+            document.getElementById('code-executor').style.display = 'none';
+        }
+        
+        function toggleEmailSender() {
+            const panel = document.getElementById('email-sender');
+            panel.style.display = panel.style.display === 'none' || panel.style.display === '' ? 'block' : 'none';
+            
+            // Hide other panels
+            document.getElementById('image-generator').style.display = 'none';
+            document.getElementById('code-executor').style.display = 'none';
+        }
+        
+        function toggleCodeExecutor() {
+            const panel = document.getElementById('code-executor');
+            panel.style.display = panel.style.display === 'none' || panel.style.display === '' ? 'block' : 'none';
+            
+            // Hide other panels
+            document.getElementById('image-generator').style.display = 'none';
+            document.getElementById('email-sender').style.display = 'none';
+        }
+        
+        // Chat functionality with Puter.js
+        async function sendMessage() {
+            const inputElement = document.getElementById('chat-input');
+            const message = inputElement.value.trim();
+            
+            if (message) {
+                // Add user message to UI
+                addMessage(message, 'user');
+                inputElement.value = '';
+                
+                // Add to conversation history
+                conversationMessages.push({
+                    role: "user",
+                    content: message
+                });
+                
+                // Save to chat history
+                saveChatMessage('user', message);
+                
+                // Show typing indicator
+                document.getElementById('typing-indicator').style.display = 'flex';
+                
+                try {
+                    // Get AI response using Puter.js
+                    const response = await puter.ai.chat(conversationMessages, {
+                        model: 'gpt-4o-mini', // Using a default model
+                        stream: false
+                    });
+                    
+                    // Hide typing indicator
+                    document.getElementById('typing-indicator').style.display = 'none';
+                    
+                    // Get the response content
+                    const aiResponse = response.text || response.message?.content;
+                    
+                    if (aiResponse) {
+                        // Add AI response to UI
+                        addMessage(aiResponse, 'ai');
+                        
+                        // Add to conversation history
+                        conversationMessages.push({
+                            role: "assistant",
+                            content: aiResponse
+                        });
+                        
+                        // Save to chat history
+                        saveChatMessage('ai', aiResponse);
+                        
+                        // Process special commands in the response
+                        processAIResponse(aiResponse);
+                    }
+                } catch (error) {
+                    // Hide typing indicator
+                    document.getElementById('typing-indicator').style.display = 'none';
+                    
+                    console.error("Error getting AI response:", error);
+                    addMessage("Sorry, I encountered an error. Please try again.", 'ai');
+                    saveChatMessage('ai', "Sorry, I encountered an error. Please try again.");
+                }
+            }
+        }
+        
+        function processAIResponse(response) {
+            const lowerResponse = response.toLowerCase();
+            
+            // Check if response suggests opening specific features
+            if (lowerResponse.includes("generate image") || 
+                (lowerResponse.includes("image") && lowerResponse.includes("generat"))) {
+                toggleImageGenerator();
+            }
+            
+            if (lowerResponse.includes("send email") || 
+                (lowerResponse.includes("email") && lowerResponse.includes("compose"))) {
+                toggleEmailSender();
+            }
+            
+            if (lowerResponse.includes("execute code") || 
+                lowerResponse.includes("run code") || 
+                lowerResponse.includes("code execution")) {
+                toggleCodeExecutor();
+            }
+        }
+        
+        function addMessage(message, sender) {
+            const messagesContainer = document.getElementById('chat-messages');
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message');
+            messageElement.classList.add(sender + '-message');
+            
+            // Process message for links or special content
+            message = processMessageContent(message);
+            
+            messageElement.innerHTML = message;
+            messagesContainer.appendChild(messageElement);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+        
+        function processMessageContent(message) {
+            // Convert URLs to clickable links
+            message = message.replace(
+                /(https?:\/\/[^\s]+)/g, 
+                '<a href="$1" target="_blank" style="color: inherit; text-decoration: underline;">$1</a>'
+            );
+            
+            // Make email addresses clickable
+            message = message.replace(
+                /(\S+@\S+\.\S+)/g,
+                '<a href="mailto:$1" style="color: inherit; text-decoration: underline;">$1</a>'
+            );
+            
+            // Simple code formatting
+            message = message.replace(
+                /`([^`]+)`/g,
+                '<code style="background-color: #111; padding: 0.2rem 0.4rem; border-radius: 0.3rem; font-family: monospace;">$1</code>'
+            );
+            
+            return message;
+        }
+        
+        // Chat history management
+        function saveChatMessage(sender, content) {
+            chatHistory.push({sender, content, timestamp: new Date().toISOString()});
+            localStorage.setItem('dhruvAIChatHistory', JSON.stringify(chatHistory));
+        }
+        
+        function loadChatHistory() {
+            const savedHistory = localStorage.getItem('dhruvAIChatHistory');
+            if (savedHistory) {
+                try {
+                    const history = JSON.parse(savedHistory);
+                    chatHistory = history;
+                    
+                    // Display last 10 messages from history
+                    const recentMessages = history.slice(-10);
+                    for (const msg of recentMessages) {
+                        addMessage(msg.content, msg.sender);
+                        
+                        // Add to conversation messages for context
+                        conversationMessages.push({
+                            role: msg.sender === 'user' ? 'user' : 'assistant',
+                            content: msg.content
+                        });
+                    }
+                } catch (e) {
+                    console.error("Error loading chat history", e);
+                    chatHistory = [];
+                }
+            }
+        }
+        
+        function clearChat() {
+            document.getElementById('chat-messages').innerHTML = '';
+            chatHistory = [];
+            
+            // Reset conversation but keep system message
+            conversationMessages = conversationMessages.slice(0, 1);
+            
+            localStorage.removeItem('dhruvAIChatHistory');
+            
+            addMessage("I've cleared our chat history. How else can I help you today? 🌟", 'ai');
+            
+            // Add to conversation history
+            conversationMessages.push({
+                role: "assistant",
+                content: "I've cleared our chat history. How else can I help you today? 🌟"
+            });
+            
+            saveChatMessage('ai', "I've cleared our chat history. How else can I help you today? 🌟");
+        }
+        
+        // Handle Enter key in chat
+        document.getElementById('chat-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+        
+        // SVG Image Generator
+        function generateImage() {
+            const prompt = document.getElementById('image-prompt').value.trim();
+            if (!prompt) {
+                addMessage("Please provide a description for the image you want to generate.", "ai");
+                return;
+            }
+            
+            // Generate SVG based on prompt
+            currentSvgCode = generateSVG(prompt);
+            
+            // Display in preview
+            document.getElementById('image-preview').innerHTML = currentSvgCode;
+            document.getElementById('download-button').style.display = 'block';
+            
+            // Add message to chat
+            addMessage(`I've generated an image based on: "${prompt}" 🎨`, 'ai');
+            
+            // Add to conversation history
+            conversationMessages.push({
+                role: "assistant",
+                content: `I've generated an image based on: "${prompt}" 🎨`
+            });
+            
+            saveChatMessage('ai', `I've generated an image based on: "${prompt}" 🎨`);
+        }
+        
+        function downloadImage() {
+            if (!currentSvgCode) {
+                addMessage("Please generate an image first", "ai");
+                return;
+            }
+            
+            // Create a blob and download
+            const blob = new Blob([currentSvgCode], {type: 'image/svg+xml'});
+            const url = URL.createObjectURL(blob);
+            
+            const downloadLink = document.createElement('a');
+            downloadLink.href = url;
+            downloadLink.download = `dhruv-ai-image-${Date.now()}.svg`;
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+            
+            URL.revokeObjectURL(url);
+            
+            addMessage("Image downloaded successfully! 📥", "ai");
+            
+            // Add to conversation history
+            conversationMessages.push({
+                role: "assistant",
+                content: "Image downloaded successfully! 📥"
+            });
+            
+            saveChatMessage('ai', "Image downloaded successfully! 📥");
+        }
+        
+        // Email Functionality
+        function sendEmail() {
+            const recipient = document.getElementById('email-recipient').value.trim();
+            const subject = document.getElementById('email-subject').value.trim();
+            const body = document.getElementById('email-body').value.trim();
+            
+            if (!recipient || !subject || !body) {
+                addMessage("Please fill in all email fields", "ai");
+                return;
+            }
+            
+            if (!isValidEmail(recipient)) {
+                addMessage("Please enter a valid email address", "ai");
+                return;
+            }
+            
+            // Create mailto link and open it
+            const mailtoLink = `mailto:${encodeURIComponent(recipient)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            window.open(mailtoLink);
+            
+            // Close email panel and confirm
+            toggleEmailSender();
+            
+            addMessage(`I've prepared an email to ${recipient} with the subject: "${subject}" 📧`, 'ai');
+            
+            // Add to conversation history
+            conversationMessages.push({
+                role: "assistant",
+                content: `I've prepared an email to ${recipient} with the subject: "${subject}" 📧`
+            });
+            
+            saveChatMessage('ai', `I've prepared an email to ${recipient} with the subject: "${subject}" 📧`);
+        }
+        
+        function isValidEmail(email) {
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailPattern.test(email);
+        }
+        
+        // Code Execution
+        function executeCode() {
+            const code = document.getElementById('code-editor').value.trim();
+            if (!code) {
+                addMessage("Please enter some JavaScript code to execute", "ai");
+                return;
+            }
+            
+            const outputElement = document.getElementById('code-output');
+            outputElement.style.display = 'block';
+            outputElement.textContent = '';
+            
+            try {
+                // Capture console output
+                const originalLog = console.log;
+                const originalError = console.error;
+                const outputText = [];
+                
+                console.log = function() {
+                    outputText.push(Array.from(arguments).join(' '));
+                    originalLog.apply(console, arguments);
+                };
+                console.error = function() {
+                    outputText.push('ERROR: ' + Array.from(arguments).join(' '));
+                    originalError.apply(console, arguments);
+                };
+                
+                // Execute the code
+                const result = new Function(code)();
+                
+                // Return to original console methods
+                console.log = originalLog;
+                console.error = originalError;
+                
+                // Display output and result
+                if (outputText.length > 0) {
+                    outputElement.textContent = outputText.join('\n');
+                }
+                
+                if (result !== undefined) {
+                    if (outputText.length > 0) {
+                        outputElement.textContent += '\n\nResult: ' + result;
+                    } else {
+                        outputElement.textContent = 'Result: ' + result;
+                    }
+                }
+                
+                if (!outputElement.textContent) {
+                    outputElement.textContent = 'Code executed successfully with no output.';
+                }
+                
+                addMessage("Your code has been executed. Check the output in the code panel. 💻", "ai");
+                
+                // Add to conversation history
+                conversationMessages.push({
+                    role: "assistant",
+                    content: "Your code has been executed. Check the output in the code panel. 💻"
+                });
+                
+                saveChatMessage('ai', "Your code has been executed. Check the output in the code panel. 💻");
+                
+            } catch (error) {
+                outputElement.textContent = 'Error: ' + error.message;
+                addMessage(`There was an error in your code: ${error.message} ❌`, "ai");
+                
+                // Add to conversation history
+                conversationMessages.push({
+                    role: "assistant",
+                    content: `There was an error in your code: ${error.message} ❌`
+                });
+                
+                saveChatMessage('ai', `There was an error in your code: ${error.message} ❌`);
+            }
+        }
+        
+        // SVG Generator
+        function generateSVG(description) {
+            // Default size
+            const width = 400;
+            const height = 300;
+            
+            // Start SVG
+            let svg = `<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">`;
+            
+            // Add black background
+            svg += `<rect width="100%" height="100%" fill="black"/>`;
+            
+            // Extract keywords from description
+            const keywords = description.toLowerCase().split(/\s+/);
+            
+            // Neon colors
+            const neonBlue = "#04D9FF";
+            const neonPink = "#FB48C4";
+            const neonPurple = "#B53FFF";
+            
+            // Add defs for glow filters
+            svg += `<defs>
+                <filter id="blue-glow" x="-50%" y="-50%" width="200%" height="200%">
+                    <feGaussianBlur stdDeviation="5" result="blur"/>
+                    <feFlood flood-color="${neonBlue}" result="color"/>
+                    <feComposite in="color" in2="blur" operator="in" result="glow"/>
+                    <feMerge>
+                        <feMergeNode in="glow"/>
+                        <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                </filter>
+                
+                <filter id="pink-glow" x="-50%" y="-50%" width="200%" height="200%">
+                    <feGaussianBlur stdDeviation="5" result="blur"/>
+                    <feFlood flood-color="${neonPink}" result="color"/>
+                    <feComposite in="color" in2="blur" operator="in" result="glow"/>
+                    <feMerge>
+                        <feMergeNode in="glow"/>
+                        <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                </filter>
+                
+                <filter id="purple-glow" x="-50%" y="-50%" width="200%" height="200%">
+                    <feGaussianBlur stdDeviation="5" result="blur"/>
+                    <feFlood flood-color="${neonPurple}" result="color"/>
+                    <feComposite in="color" in2="blur" operator="in" result="glow"/>
+                    <feMerge>
+                        <feMergeNode in="glow"/>
+                        <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                </filter>
+            </defs>`;
+            
+            // Check for common shapes and add them
+            if (keywords.includes('circle') || keywords.includes('round') || keywords.includes('sphere')) {
+                svg += `<circle cx="${width/2}" cy="${height/2}" r="80" fill="none" stroke="${neonBlue}" stroke-width="3" filter="url(#blue-glow)">
+                    <animate attributeName="r" values="80;85;80" dur="2s" repeatCount="indefinite" />
+                </circle>`;
+            }
+            
+            if (keywords.includes('square') || keywords.includes('box') || keywords.includes('rectangle')) {
+                svg += `<rect x="${width/2 - 75}" y="${height/2 - 75}" width="150" height="150" fill="none" stroke="${neonPink}" stroke-width="3" filter="url(#pink-glow)">
+                    <animate attributeName="width" values="150;160;150" dur="2s" repeatCount="indefinite" />
+                    <animate attributeName="height" values="150;160;150" dur="2s" repeatCount="indefinite" />
+                    <animate attributeName="x" values="${width/2 - 75};${width/2 - 80};${width/2 - 75}" dur="2s" repeatCount="indefinite" />
+                    <animate attributeName="y" values="${height/2 - 75};${height/2 - 80};${height/2 - 75}" dur="2s" repeatCount="indefinite" />
+                </rect>`;
+            }
+            
+            if (keywords.includes('triangle')) {
+                svg += `<polygon points="${width/2},${height/2 - 80} ${width/2 - 70},${height/2 + 40} ${width/2 + 70},${height/2 + 40}" 
+                        fill="none" stroke="${neonPurple}" stroke-width="3" filter="url(#purple-glow)">
+                    <animate attributeName="points" 
+                            values="${width/2},${height/2 - 80} ${width/2 - 70},${height/2 + 40} ${width/2 + 70},${height/2 + 40};
+                                    ${width/2},${height/2 - 90} ${width/2 - 80},${height/2 + 45} ${width/2 + 80},${height/2 + 45};
+                                    ${width/2},${height/2 - 80} ${width/2 - 70},${height/2 + 40} ${width/2 + 70},${height/2 + 40}" 
+                            dur="2s" repeatCount="indefinite" />
+                </polygon>`;
+            }
+            
+            if (keywords.includes('star')) {
+                const starPoints = generateStarPoints(width/2, height/2, 5, 80, 40);
+                svg += `<polygon points="${starPoints}" fill="none" stroke="${neonPink}" stroke-width="3" filter="url(#pink-glow)">
+                    <animate attributeName="stroke" values="${neonPink};${neonPurple};${neonPink}" dur="4s" repeatCount="indefinite" />
+                </polygon>`;
+            }
+            
+            if (keywords.includes('heart')) {
+                svg += `<path d="M ${width/2} ${height/2 + 40} 
+                        C ${width/2 - 40} ${height/2 - 20}, ${width/2 - 80} ${height/2 - 80}, ${width/2} ${height/2 - 40} 
+                        C ${width/2 + 80} ${height/2 - 80}, ${width/2 + 40} ${height/2 - 20}, ${width/2} ${height/2 + 40} Z" 
+                        fill="none" stroke="${neonPink}" stroke-width="3" filter="url(#pink-glow)">
+                    <animate attributeName="stroke-width" values="3;5;3" dur="1s" repeatCount="indefinite" />
+                </path>`;
+            }
+            
+            if (keywords.includes('wave') || keywords.includes('line')) {
+                svg += `<path d="M0,${height/2} Q${width/4},${height/3} ${width/2},${height/2} T${width},${height/2}" 
+                        fill="none" stroke="${neonBlue}" stroke-width="3" filter="url(#blue-glow)">
+                    <animate attributeName="d" 
+                            values="M0,${height/2} Q${width/4},${height/3} ${width/2},${height/2} T${width},${height/2};
+                                    M0,${height/2} Q${width/4},${height/1.5} ${width/2},${height/2} T${width},${height/2};
+                                    M0,${height/2} Q${width/4},${height/3} ${width/2},${height/2} T${width},${height/2}" 
+                            dur="3s" repeatCount="indefinite" />
+                </path>`;
+            }
+            
+            // Add text if found in description
+            if (keywords.includes('text') || keywords.includes('name') || description.includes('"')) {
+                // Try to extract text in quotes
+                let text = "Dhruv";
+                const matches = description.match(/"([^"]+)"/);
+                if (matches && matches[1]) {
+                    text = matches[1];
+                }
+                
+                svg += `<text x="${width/2}" y="${height/2}" font-family="Arial" font-size="30" text-anchor="middle" fill="${neonPurple}" filter="url(#purple-glow)">${text}</text>`;
+            }
+            
+            // If no specific elements were identified, create a cool design with all three colors
+            if (!(keywords.includes('circle') || keywords.includes('square') || 
+                  keywords.includes('triangle') || keywords.includes('star') || 
+                  keywords.includes('heart') || keywords.includes('wave') ||
+                  keywords.includes('line'))) {
+                
+                // Draw concentric circles
+                svg += `<circle cx="${width/2}" cy="${height/2}" r="100" fill="none" stroke="${neonBlue}" stroke-width="2" filter="url(#blue-glow)">
+                    <animate attributeName="r" values="100;105;100" dur="3s" repeatCount="indefinite" />
+                </circle>`;
+                
+                svg += `<circle cx="${width/2}" cy="${height/2}" r="70" fill="none" stroke="${neonPink}" stroke-width="2" filter="url(#pink-glow)">
+                    <animate attributeName="r" values="70;75;70" dur="2s" repeatCount="indefinite" />
+                </circle>`;
+                
+                svg += `<circle cx="${width/2}" cy="${height/2}" r="40" fill="none" stroke="${neonPurple}" stroke-width="2" filter="url(#purple-glow)">
+                    <animate attributeName="r" values="40;45;40" dur="1.5s" repeatCount="indefinite" />
+                </circle>`;
+                
+                // Add intersecting lines
+                for (let i = 0; i < 8; i++) {
+                    const angle = i * Math.PI / 4;
+                    const x1 = width/2 + Math.cos(angle) * 120;
+                    const y1 = height/2 + Math.sin(angle) * 120;
+                    const x2 = width/2 - Math.cos(angle) * 120;
+                    const y2 = height/2 - Math.sin(angle) * 120;
+                    
+                    const color = i % 3 === 0 ? neonBlue : (i % 3 === 1 ? neonPink : neonPurple);
+                    const filterId = i % 3 === 0 ? "blue-glow" : (i % 3 === 1 ? "pink-glow" : "purple-glow");
+                    
+                    svg += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${color}" stroke-width="2" filter="url(#${filterId})">
+                        <animate attributeName="stroke-width" values="2;3;2" dur="${1 + (i / 4)}s" repeatCount="indefinite" />
+                    </line>`;
+                }
+            }
+            
+            // Close SVG
+            svg += `</svg>`;
+            
+            return svg;
+        }
+        
+        // Helper function to generate star points
+        function generateStarPoints(centerX, centerY, points, outerRadius, innerRadius) {
+            let pointsString = "";
+            for(let i = 0; i < points * 2; i++) {
+                const radius = i % 2 === 0 ? outerRadius : innerRadius;
+                const angle = Math.PI * i / points;
+                const x = centerX + radius * Math.sin(angle);
+                const y = centerY - radius * Math.cos(angle);
+                
+                pointsString += `${x},${y} `;
+            }
+            return pointsString.trim();
+        }
+    </script>
+</body>
+</html>
